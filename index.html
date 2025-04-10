@@ -3,23 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>login page</title>
-</head>
-<style>
+    <title>Shop Owner Dashboard</title>
+    <style>
         body {
             margin: 0;
             font-family: Arial, sans-serif;
             background-color: black;
-            color: rgb(0 0 0);
-            padding-bottom: 60px; /* Added padding to account for bottom nav */
+            color: white;
         }
         .container {
-            padding: 0px;
-            min-height: 100vh;
+            padding: 20px;
+        }
+        .header {
+            font-size: 24px;
+            font-weight: bold;
+            position: absolute;
+            top: 100px;
+            left: 40px;
+        }
+        .sub-header {
+            color: orange;
+            font-size: 14px;
+            position: absolute;
+            top: 130px;
+            left: 40px;            
+        }
+        .card1 img{
+            width: auto;
+            top: 270px;
+            position: absolute;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            overflow: hidden;
+            border-radius: 10px;
+        }
+        .card2 {
+            border-radius: 10px;
+            width:350px;
+            height: 100px;
+            padding: 10px;
+            top: 270px;
+            position: absolute;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            overflow: hidden;
+            background:none;
+        }
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
             display: flex;
-            justify-content: center;
-            align-items: center;
-            position: relative;
+            justify-content: space-around;
+            background-color: white;
+            padding: 10px 0;
+        }
+        .logo img{
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: white;
+            position: absolute;
+            top: 30px;
+            right: 30px;
+        }
+        .today{
+            position: absolute;
+            right: 8px;
+            bottom: 8px;
+            font-size: 16px;
+            color: orange;
         }
         .glow{
             height: 200px;
@@ -31,21 +84,79 @@
             top: -80px;
             filter: blur(16px);
          }
-         .logo img{
-            width: 250px;
-            height: auto;
+         .glow1{
+            height: 200px;
+            width: 200px;
+            border-radius: 50%;
+            background-image: radial-gradient(40% 40%, rgb(255, 166, 0) ,rgba(255, 255, 255, 0));
+            position: absolute;
+            right: -80px;
+            margin-top: 0px;           
          }
-
-</style>
+         .total-sell {
+            font-size: 24px;
+            font-weight: bold;
+            margin-top: 10px;
+         }
+    </style>
+</head>
 <body>
     <div class="container">
         <div class="glow"></div>
+        <div class="logo"> <img src="image.png" alt="logo"></div>
+        <div class="header">Hi Shravan jangid</div>
+        <div class="sub-header">shop owner</div>
+        <div class="card1">
+            <img src="Rectangle 4.svg" alt="">
+        </div>
+        <div class="card2">
+            <p>Total sell</p>
+            <div class="total-sell" id="total-sell">₹ 0</div>
+            <small class="today">TODAY</small>
+        </div>
     </div>
-    
-    <div class="logo">
-        <a href="https://example.com">
-          <img src="logo.png" alt="यहां इमेज का विवरण दें">
+    <div class="bottom-nav">
+        <a href="home.html">
+            <img src="Vector.svg" alt="Home" width="15px" height="auto">
         </a>
-    </div>
+        <a href="bill.html">
+            <img src="Send to Printer.svg" alt="Print" width="20px" height="auto">
+        </a>
+        <a href="recode.html">
+            <img src="Vector (1).svg" alt="data" width="15px" height="auto">
+        </a>
+        <a href="data.html">
+            <img src="Rules.svg" alt="Recode" width="20px" height="auto">
+        </a>  
+        <a href="products.html">
+            🔧
+        </a>     
+      </div>
+
+    <script>
+        // Function to calculate only today's sales
+        function calculateTodaySales() {
+            const savedBills = localStorage.getItem('savedBills');
+            const bills = savedBills ? JSON.parse(savedBills) : [];
+    
+            const today = new Date().toDateString();
+            let todaySales = 0;
+    
+            bills.forEach(bill => {
+                const billDate = new Date(bill.timestamp).toDateString();
+                if (billDate === today) {
+                    todaySales += bill.total || 0;
+                }
+            });
+    
+            // Show only today’s sales
+            document.getElementById('total-sell').textContent = `₹ ${todaySales.toFixed(2)}`;
+        }
+    
+        // Call the function on page load and when returning to the page
+        window.addEventListener('load', calculateTodaySales);
+        window.addEventListener('pageshow', calculateTodaySales);
+    </script>
+    
 </body>
 </html>
