@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fancy Store UI</title>
+<style>        body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: black;
+    color: rgb(0, 0, 0);
+    padding-bottom: 120px; /* Increased padding for bottom elements */
+}
+.container {
+    padding: 0px;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+.bottom-nav {
+    position: fixed;
+    bottom: 0px; /* Adjusted to make space for controls */
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    background-color: white;
+    padding: 10px 0;
+    z-index: 1000;
+}
+.glow{
+    height: 200px;
+    width: 200px;
+    border-radius: 50%;
+    background-image: radial-gradient(40% 40%, rgba(255, 166, 0, 0.58) ,rgba(255, 255, 255, 0));
+    position: absolute;
+    left: -90px;
+    top: -80px;
+    filter: blur(16px);
+ }
+
+/* Removed back button styles */
+
+.controls {
+    position: fixed;
+    bottom: 60px;
+    width: 100%;
+    display: inline-flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-left: 5px;
+}
+
+.date-picker {
+    font-size: 18px;
+    padding: 6px;
+    border-radius: 20px;
+    border: 1px solid #ccc;
+}
+
+.add-btn {
+    background: #ffffff;
+    border: none;
+    border-radius: 50%;
+    width: 42px;
+    height: 42px;
+    position: absolute;
+    right: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    font-size: 30px;
+    font-weight: bold;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.add-btn:hover {
+    background: #C4B4A6;
+    border: 1px double black;
+}
+
+        /* Card Layout */
+        .add-form {
+            background: #ff6a0000 url('Rectangle 4.svg')  no-repeat center center;
+            background-size: cover;
+            color: white;
+            width: 100%;
+            height: 173px;
+            border-radius: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            margin-bottom: 15px;
+            margin-top: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            transition: transform 0.3s;
+        }
+
+        .info {
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            font-size: 20px;
+        }
+
+        .image-placeholder {
+            width: 102px;
+            height: 143px;
+            background: #D4D4D4;
+            border-radius: 12px;
+            object-fit: cover;
+            margin: 15px;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .image-placeholder:hover {
+            transform: scale(1.05);
+        }
+
+        .form-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #433022 url('https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60') no-repeat center center;
+            background-size: cover;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            display: none;
+            z-index: 10;
+            width: 80%;
+            max-width: 400px;
+        }
+        
+        .form-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 10px;
+            z-index: -1;
+        }
+
+        .form-container input, .form-container button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            font-size: 16px;
+            border-radius: 5px;
+            border: none;
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .form-container button {
+            background: #4CAF50;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .form-container button:hover {
+            background: #45a049;
+        }
+
+        /* Fullscreen Image */
+        .fullscreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            display: none;
+        }
+
+        .fullscreen img {
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+        }
+
+        .fullscreen .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            font-size: 30px;
+            color: white;
+            cursor: pointer;
+        }
+        .delete-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #ff5555;
+            color: white;
+            border: none;
+            border-radius: 15px;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-size: 16px;
+            z-index: 2; /* Ensure it's above other elements */
+        }
+
+        .delete-btn:hover {
+            background: #ff0000;
+        }
+        
+        /* Stop event propagation for delete button */
+        .delete-btn-container {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="glow"></div>
+
+    <div class="content" id="dataContainer"></div>
+
+    <div class="form-container" id="form">
+        <input type="date" id="formDatePicker" required>
+        <input type="text" id="shopName" placeholder="Shop Name" required>
+        <input type="number" id="totalAmount" placeholder="Total Amount" required>
+        <input type="file" id="photoInput" accept="image/*" capture="camera" required>
+        <button onclick="addData()">Add Data</button>
+    </div>
+
+    <div id="fullscreen" class="fullscreen" onclick="closeFullscreen()">
+        <span class="close-btn" onclick="closeFullscreen()">×</span>
+        <img id="fullscreenImg" src="" alt="Full Screen">
+    </div>
+
+    <!-- Bottom controls -->
+    <div class="controls">
+        <input type="date" id="datePicker" class="date-picker" onchange="loadDataByDate()">
+        <button class="add-btn" onclick="toggleForm()">+</button>
+    </div>
+
+    <div class="bottom-nav">
+        <a href="home.html">
+            <img src="Vector.svg" alt="Home" width="15px" height="auto">
+        </a>
+        <a href="bill.html">
+            <img src="Send to Printer.svg" alt="Print" width="20px" height="auto">
+        </a>
+        <a href="recode.html">
+            <img src="Vector (1).svg" alt="data" width="15px" height="auto">
+        </a>
+        <a href="data.html">
+            <img src="Rules.svg" alt="Recode" width="20px" height="auto">
+        </a>  
+        <a href="products.html">
+            🔧
+        </a>     
+      </div>
+
+<script>
+    // Set today's date as default
+    document.addEventListener('DOMContentLoaded', function() {
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('datePicker').value = today;
+        document.getElementById('formDatePicker').value = today;
+        loadDataByDate();
+    });
+
+    function toggleForm() {
+        const form = document.getElementById('form');
+        form.style.display = (form.style.display === 'none' || form.style.display === '') ? 'block' : 'none';
+    }
+
+    function addData() {
+        const date = document.getElementById('formDatePicker').value;
+        const shop = document.getElementById('shopName').value;
+        const total = document.getElementById('totalAmount').value;
+        const photoInput = document.getElementById('photoInput');
+
+        if (!date || !shop || !total || !photoInput.files[0]) {
+            alert('Please fill all fields and select an image');
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function (event) {
+            let data = JSON.parse(localStorage.getItem(date)) || [];
+            data.push({ shop, total, image: event.target.result });
+            localStorage.setItem(date, JSON.stringify(data));
+            
+            // Reset form
+            document.getElementById('shopName').value = '';
+            document.getElementById('totalAmount').value = '';
+            document.getElementById('photoInput').value = '';
+            
+            // Update displayed data
+            document.getElementById('datePicker').value = date;
+            loadDataByDate();
+            toggleForm();
+        };
+        reader.readAsDataURL(photoInput.files[0]);
+    }
+
+    function deleteData(date, index) {
+        if (confirm('Are you sure you want to delete this record?')) {
+            let data = JSON.parse(localStorage.getItem(date)) || [];
+            data.splice(index, 1);
+            localStorage.setItem(date, JSON.stringify(data));
+            loadDataByDate();
+        }
+    }
+
+    function loadDataByDate() {
+        const date = document.getElementById('datePicker').value;
+        const data = JSON.parse(localStorage.getItem(date)) || [];
+        const container = document.getElementById('dataContainer');
+        container.innerHTML = '';
+
+        data.forEach((item, index) => {
+            const card = document.createElement('div');
+            card.className = 'add-form';
+            card.innerHTML = `
+                <div class="info">
+                    <p><strong>Total:</strong> ₹ ${item.total}</p>
+                    <p><strong>Shop:</strong> ${item.shop}</p>
+                </div>
+                <img src="${item.image}" class="image-placeholder" onclick="openFullscreen('${item.image}')">
+            `;
+            
+            // Create delete button with event listener
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'delete-btn';
+            deleteBtn.textContent = 'Delete';
+            deleteBtn.onclick = function(e) {
+                e.stopPropagation(); // Prevent triggering the card's click event
+                deleteData(date, index);
+            };
+            
+            card.appendChild(deleteBtn);
+            container.appendChild(card);
+        });
+    }
+
+    function openFullscreen(imgSrc) {
+        const fullscreen = document.getElementById('fullscreen');
+        const img = document.getElementById('fullscreenImg');
+        img.src = imgSrc;
+        fullscreen.style.display = 'flex';
+    }
+
+    function closeFullscreen() {
+        document.getElementById('fullscreen').style.display = 'none';
+    }
+</script>
+
+</body>
+</html>

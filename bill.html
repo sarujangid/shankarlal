@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shop Owner Dashboard</title>
+<style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: black;
+            color: rgb(0, 0, 0);
+            padding-bottom: 60px; /* Added padding to account for bottom nav */
+        }
+        .container {
+            padding: 0px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+            background-color: white;
+            padding: 10px 0;
+            z-index: 1000; /* Ensure nav stays on top */
+        }
+        .glow{
+            height: 200px;
+            width: 200px;
+            border-radius: 50%;
+            background-image: radial-gradient(40% 40%, rgba(255, 166, 0, 0.58) ,rgba(255, 255, 255, 0));
+            position: absolute;
+            left: -90px;
+            top: -80px;
+            filter: blur(16px);
+         }
+
+         /*bill container*/
+        .bill-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 50mm;
+            max-height: 80vh; /* Limit height to prevent overflow */
+            overflow-y: auto; /* Add scroll for long content */
+            position: relative;
+            margin: 20px auto; /* Center the container */
+        }
+        header {
+            text-align: center;
+            margin-bottom: 10px;
+            white-space: normal;
+            overflow: visible;
+        }
+        header h2 {
+            font-size: 18px;
+            font-weight: bold;
+            margin: 0;
+            padding: 0;
+            word-wrap: break-word;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+        th, td {
+            border-bottom: 1px solid #ddd;
+            padding: 4px;
+            text-align: left;
+        }
+        /* Add action buttons in items */
+        .item-actions {
+            display: flex;
+            gap: 4px;
+        }
+        .item-actions button {
+            padding: 2px 4px;
+            font-size: 10px;
+            margin: 0;
+        }
+        .total {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        footer {
+            margin-top: 10px;
+            font-size: 12px;
+            text-align: center;
+        }
+        .actions {
+            display: flex;
+            flex-direction: column;
+            margin-top: 15px;
+            position: relative;
+        }
+        button {
+            border: none;
+            background: none;
+        }
+        /* Fixed buttons at the corners of bill-container */
+        .action-button {
+            position: fixed;
+            z-index: 100;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            border-radius: 50%;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .scaner {
+            bottom: 70px;
+            left: 20px;
+        }
+        .print {
+            bottom: 70px;
+            right: 20px;
+        }
+        .add-bill {
+            left: 20px;
+            top: 20px;
+        }
+        .save {
+            right: 20px;
+            top: 20px;
+        }
+        button.edit-btn {
+            background: #2c7;
+        }
+        button.edit-btn:hover {
+            background: #1a6;
+        }
+        button.delete-btn {
+            background: #e44;
+        }
+        button.delete-btn:hover {
+            background: #c33;
+        }
+        input {
+            padding: 5px;
+            margin-bottom: 5px;
+        }
+        /* Edit mode styling */
+        .edit-form {
+            background-color: #f8f8f8;
+            padding: 8px;
+            margin-top: 5px;
+            border-radius: 5px;
+            display: none;
+        }
+        .edit-form input {
+            width: calc(100% - 10px);
+            margin-bottom: 5px;
+        }
+        .edit-form-buttons {
+            display: flex;
+            justify-content: space-between;
+        }
+        .edit-form-buttons button {
+            flex: 1;
+            margin: 0 2px;
+        }
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            display: none;
+            z-index: 1001;
+        }
+        /* Search box styling */
+        .search-container {
+            margin: 10px;
+            position: relative;
+        }
+        .search-container input {
+            width: 40mm;
+            padding: 8px 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .search-container input:focus {
+            outline: none;
+            border-color: #333;
+        }
+        .search-clear {
+            position: absolute;
+            right: 8px;
+            top: 8px;
+            background: none;
+            border: none;
+            color: #999;
+            cursor: pointer;
+            padding: 0;
+            margin: 0;
+            font-size: 14px;
+        }
+        .search-clear:hover {
+            color: #333;
+        }
+        /* Scanner modal */
+        .scanner-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+        .scanner-container {
+            width: 70%;
+            max-width: 400px;
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+        }
+        .scanner-container h3 {
+            margin-top: 0;
+        }
+        #scanner-preview {
+            width: 100%;
+            height: 200px;
+            border: 2px solid #ddd;
+            margin: 10px 0;
+            background-color: #f5f5f5;
+            position: relative;
+        }
+        .scanner-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+        }
+        .scanner-buttons button {
+            padding: 8px 15px;
+            border-radius: 5px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .scanner-buttons button.cancel {
+            background-color: #f44336;
+        }
+        @media print {
+            body {
+                padding: 0;
+                height: auto;
+                background-color: white;
+            }
+            .container {
+                display: block;
+                height: auto;
+                padding: 0;
+                margin: 0;
+            }
+            .actions, .item-actions, .edit-form, .notification, .search-container, .bottom-nav, .glow, .action-button, .scanner-modal {
+                display: none !important;
+            }
+            .bill-container {
+                width: 80mm;
+                max-height: none;
+                overflow: visible;
+                box-shadow: none;
+                padding: 0;
+                margin: 0 auto;
+                page-break-after: always;
+                position: static;
+            }
+            header h2 {
+                font-size: 20px;
+                white-space: normal;
+                word-break: keep-all;
+            }
+        }
+        .hidden-pdf {
+            position: absolute;
+            left: -9999px;
+        }
+        .scanner-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+@media screen and (max-width: 500px) {
+  .bill-container {
+    width: 90%;
+  }
+}
+</style>
+</head>
+<body>
+    <div class="container">
+      <div class="glow"></div>
+  
+      <div class="bill-container" id="bill-content">
+        <header>
+          <img src="Group 5.svg" alt="shop-logo">
+        </header>
+        <p>Date: <span id="bill-date"></span></p>
+        <p>Bill No: <span id="bill-number"></span></p>
+  
+        <!-- Search box -->
+        <div class="search-container">
+          <input type="text" id="item-search" placeholder="Search items...">
+          <button class="search-clear" onclick="clearSearch()">&#10005;</button>
+        </div>
+  
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 20mm">Product</th>
+              <th style="width: 7.5mm">Qty</th>
+              <th style="width: 10mm">Price</th>
+              <th style="width: 12.5mm">Amount</th>
+            </tr>
+          </thead>
+          <tbody id="bill-items">
+            <!-- Bill items will be added dynamically -->
+          </tbody>
+        </table>
+  
+        <div class="total">
+          <span>Total:</span>
+          <span id="total-amount">&#8377;0</span>
+        </div>
+  
+        <footer>
+          <p>Thank you for shopping!</p>
+        </footer>
+  
+        <!-- Product Entry Area -->
+        <div class="actions">
+          <input type="text" id="product-name" placeholder="Enter product name">
+          <input type="number" id="product-qty" placeholder="Qty" min="1" value="1">
+          <input type="number" id="product-price" placeholder="Price per item" min="0" value="0">
+          <button onclick="addItemFromInput()">➕ Add Item</button>
+  
+          <input type="text" id="manualBarcode" placeholder="Enter Barcode">
+          <button onclick="searchByBarcode()">🔍 Scan</button>
+        </div>
+      </div>
+      
+      <!-- Scanner Button -->
+      <div class="scanner-modal" id="scannerModal">
+        <div class="scanner-container">
+          <h3>Scan Barcode</h3>
+          <div id="scanner-preview"></div>
+          <p id="scan-status">Waiting for scan...</p>
+          <div class="scanner-buttons">
+            <button onclick="closeScanner()">Cancel</button>
+          </div>
+        </div>
+      </div>
+      
+      <button id="barcode" onclick="startScanner()" class="action-button scaner">
+        <img src="Vector (3).svg" alt="scaner" width="20px" height="auto">
+      </button>
+  
+      <!-- Action Buttons -->
+      <button onclick="printBill()" class="action-button print">
+        <img src="Send to Printer.svg" alt="print" width="20px" height="auto">
+      </button>
+  
+      <button onclick="newBill()" class="action-button add-bill">
+        <img src="Vector (2).svg" alt="add-bill" width="15px" height="auto">
+      </button>
+  
+      <button onclick="saveBillAsPDF()" class="action-button save">
+        <img src="Save alt.png" alt="save" width="20px" height="auto">
+      </button>
+
+      <!-- New Product Modal -->
+      <div id="newProductModal" style="display:none; position:fixed; top:20%; left:50%; transform:translateX(-50%); background:#fff; padding:20px; border:1px solid #ccc; z-index:9999; border-radius:10px;">
+        <h3>🆕 New Product</h3>
+        <label>Barcode:</label><br>
+        <input type="text" id="modal-barcode" readonly><br><br>
+
+        <label>Item Name:</label><br>
+        <input type="text" id="modal-name"><br><br>
+
+        <label>Price:</label><br>
+        <input type="number" id="modal-price"><br><br>
+
+        <button onclick="saveNewProduct()">✅ Save Product</button>
+        <button onclick="closeModal()">❌ Cancel</button>
+      </div>
+
+
+      <!-- Notification -->
+      <div class="notification" id="notification"></div>
+  
+      <!-- Bottom Nav -->
+      <div class="bottom-nav">
+        <a href="home.html">
+          <img src="Vector.svg" alt="Home" width="15px" height="auto">
+        </a>
+        <a href="bill.html">
+          <img src="Send to Printer.svg" alt="Print" width="20px" height="auto">
+        </a>
+        <a href="recode.html">
+          <img src="Vector (1).svg" alt="data" width="15px" height="auto">
+        </a>
+        <a href="data.html">
+          <img src="Rules.svg" alt="Recode" width="20px" height="auto">
+        </a>
+        <a href="products.html">
+          🔧
+        </a>
+      </div>
+    </div>
+  
+<script>
+      function addItemFromInput() {
+        const name = document.getElementById("product-name").value.trim();
+        const qty = parseInt(document.getElementById("product-qty").value);
+        const price = parseFloat(document.getElementById("product-price").value);
+  
+        if (!name || qty <= 0 || price < 0) {
+          alert("Please enter valid item details.");
+          return;
+        }
+  
+        addBillItem(name, qty, price);
+  
+        document.getElementById("product-name").value = "";
+        document.getElementById("product-qty").value = 1;
+        document.getElementById("product-price").value = 0;
+      }
+</script>
+<script>
+let scanner; // global variable
+
+function scanBarcode() {
+  document.getElementById("scannerModal").style.display = "flex";
+  
+  scanner = new Html5Qrcode("scanner-preview");
+  scanner.start(
+    { facingMode: "environment" },
+    {
+      fps: 10,
+      qrbox: 250
+    },
+    (barcode) => {
+      handleScannedBarcode(barcode);
+    },
+    (error) => {
+      // console.log("Scan error:", error);
+    }
+  );
+}
+
+function closeScanner() {
+  document.getElementById("scannerModal").style.display = "none";
+  if (scanner) {
+    scanner.stop().then(() => {
+      scanner.clear();
+    });
+  }
+}
+
+function handleScannedBarcode(barcode) {
+  const products = JSON.parse(localStorage.getItem("products")) || {};
+  const product = products[barcode];
+
+  if (product) {
+    addBillItemFromProduct(product.name, product.price, 1);
+    showScanStatus("✅ Scanned item added to bill");
+  } else {
+    showScanStatus("❌ Product not found. Please add.");
+    promptAddNewProduct(barcode);
+  }
+}
+
+function addBillItemFromProduct(name, price, qty = 1) {
+  document.getElementById("product-name").value = name;
+  document.getElementById("product-price").value = price;
+  document.getElementById("product-qty").value = qty;
+  addBillItem(); // existing function in your code
+}
+
+function showScanStatus(msg) {
+  document.getElementById("scan-status").textContent = msg;
+}
+
+function promptAddNewProduct(barcode) {
+  const name = prompt("Enter product name for barcode: " + barcode);
+  const price = prompt("Enter price:");
+
+  if (name && price) {
+    const products = JSON.parse(localStorage.getItem("products")) || {};
+    products[barcode] = { name, price: parseFloat(price) };
+    localStorage.setItem("products", JSON.stringify(products));
+    addBillItemFromProduct(name, parseFloat(price));
+    showScanStatus("✅ Product saved & added to bill");
+  }
+}
+</script>
+<script>
+    // ==========================
+    // Billing Logic
+    // ==========================
+    let billItems = [];
+    let nextItemId = 1;
+    let savedBills = JSON.parse(localStorage.getItem('savedBills') || '[]');
+    
+    document.getElementById("bill-date").textContent = new Date().toLocaleDateString();
+    document.getElementById("bill-number").textContent = Math.floor(Math.random() * 10000);
+    
+    function calculateItemTotal(qty, price) {
+        return qty * price;
+    }
+    
+    function showNotification(message, duration = 2000) {
+        const notification = document.getElementById("notification");
+        notification.textContent = message;
+        notification.style.display = "block";
+        setTimeout(() => notification.style.display = "none", duration);
+    }
+    
+    function updateTotal() {
+        const total = billItems.reduce((sum, item) => sum + item.amount, 0);
+        document.getElementById("total-amount").textContent = `₹${total.toFixed(2)}`;
+    }
+    
+    function renderBillItems() {
+        const tableBody = document.getElementById("bill-items");
+        tableBody.innerHTML = "";
+        if (billItems.length === 0) {
+            tableBody.innerHTML = `<tr><td colspan="4" style="text-align:center;">No items added</td></tr>`;
+            return;
+        }
+    
+        billItems.forEach(item => {
+            const row = tableBody.insertRow();
+            row.innerHTML = `
+                <td>${item.name}</td>
+                <td>${item.qty}</td>
+                <td>₹${item.price.toFixed(2)}</td>
+                <td>₹${item.amount.toFixed(2)}</td>
+            `;
+        });
+    }
+    
+    function addBillItem(name, qty, price) {
+        const itemId = nextItemId++;
+        const newItem = {
+            id: itemId,
+            name,
+            qty,
+            price,
+            amount: calculateItemTotal(qty, price)
+        };
+        billItems.push(newItem);
+        renderBillItems();
+        updateTotal();
+    }
+    
+    function saveBillToLocalStorage() {
+        const billNumber = document.getElementById("bill-number").textContent;
+        const billDate = document.getElementById("bill-date").textContent;
+        const total = billItems.reduce((sum, item) => sum + item.amount, 0);
+    
+        const bill = {
+            id: Date.now(),
+            billNumber,
+            date: billDate,
+            items: [...billItems],
+            total,
+            timestamp: new Date().toISOString()
+        };
+    
+        savedBills.push(bill);
+        localStorage.setItem('savedBills', JSON.stringify(savedBills));
+        showNotification("Bill saved successfully!", 3000);
+    }
+    
+    function newBill() {
+        billItems = [];
+        nextItemId = 1;
+        document.getElementById("bill-items").innerHTML = "";
+        document.getElementById("total-amount").textContent = "₹0";
+        document.getElementById("bill-number").textContent = Math.floor(Math.random() * 10000);
+    }
+    
+    function printBill() {
+        saveBillToLocalStorage();
+        window.print();
+        newBill();
+    }
+    
+    function downloadAsPDF() {
+        const billContent = document.getElementById("bill-content");
+        const billCopy = billContent.cloneNode(true);
+        const actions = billCopy.querySelector(".actions");
+        if (actions) actions.remove();
+    
+        const tempDiv = document.createElement("div");
+        tempDiv.style.display = "none";
+        tempDiv.appendChild(billCopy);
+        document.body.appendChild(tempDiv);
+    
+        html2canvas(billCopy).then(canvas => {
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF();
+            const imgData = canvas.toDataURL("image/png");
+            const width = pdf.internal.pageSize.getWidth();
+            const height = canvas.height * width / canvas.width;
+    
+            pdf.addImage(imgData, 'PNG', 0, 0, width, height);
+            const billNumber = document.getElementById("bill-number").textContent;
+            pdf.save(`SP_Fashion_Bill_${billNumber}.pdf`);
+            document.body.removeChild(tempDiv);
+        });
+    }
+    
+    function saveBillAsPDF() {
+        saveBillToLocalStorage();
+        downloadAsPDF();
+        newBill();
+    }
+    
+    // ==========================
+    // Barcode Scanner Logic
+    // ==========================
+    function getProducts() {
+        return JSON.parse(localStorage.getItem("products") || "[]");
+    }
+    
+    function saveTempBarcode(barcode) {
+        localStorage.setItem("newBarcode", barcode);
+    }
+    
+    function fetchProduct(barcode) {
+        const products = getProducts();
+        const found = products.find(p => p.barcode === barcode);
+        if (found) {
+            addBillItem(found.name, 1, parseFloat(found.price));
+        } else {
+            saveTempBarcode(barcode);
+            window.location.href = "products.html";
+        }
+    }
+    
+    function startScanner() {
+  document.getElementById("scannerModal").style.display = "flex";
+
+  scanner = new Html5Qrcode("scanner-preview");
+  scanner.start(
+    { facingMode: "environment" },
+    { fps: 10, qrbox: 250 },
+    (barcode) => {
+      handleScannedBarcode(barcode);
+    },
+    (error) => {
+      // silent
+    }
+  );
+}
+
+    
+    function searchByBarcode() {
+        const code = document.getElementById("manualBarcode").value.trim();
+        if (code) fetchProduct(code);
+    }
+    
+    // ==========================
+    // Manual Add Item
+    // ==========================
+    function addManualItem() {
+        const name = document.getElementById("manualName").value.trim();
+        const price = parseFloat(document.getElementById("manualPrice").value.trim());
+        if (name && !isNaN(price)) {
+            addBillItem(name, 1, price);
+            showNotification("Item added manually.");
+        } else {
+            alert("Please enter valid item name and price.");
+        }
+    }
+    
+    // ==========================
+    // Event Listeners
+    // ==========================
+    window.addEventListener('load', () => {
+        renderBillItems();
+        updateTotal();
+    
+        document.getElementById("scanBtn").addEventListener("click", startScanner);
+        document.getElementById("addItemBtn").addEventListener("click", addManualItem);
+        document.getElementById("savePdfBtn").addEventListener("click", saveBillAsPDF);
+        document.getElementById("printBtn").addEventListener("click", printBill);
+        document.getElementById("searchBarcodeBtn").addEventListener("click", searchByBarcode);
+    });
+
+    //===================
+    //popup window
+    //===================
+        function showNewProductModal(barcode) {
+      document.getElementById("modal-barcode").value = barcode;
+      document.getElementById("modal-name").value = "";
+      document.getElementById("modal-price").value = "";
+      document.getElementById("newProductModal").style.display = "block";
+    }
+
+    function closeModal() {
+      document.getElementById("newProductModal").style.display = "none";
+    }
+
+    // Call this when Save button is clicked
+    function saveNewProduct() {
+      const barcode = document.getElementById("modal-barcode").value.trim();
+      const name = document.getElementById("modal-name").value.trim();
+      const price = document.getElementById("modal-price").value.trim();
+
+      if (!name || !price) {
+        alert("❗ Please enter name and price");
+        return;
+      }
+
+      const products = JSON.parse(localStorage.getItem("products") || "[]");
+
+      // Save new product
+      products.push({ barcode, name, price });
+      localStorage.setItem("products", JSON.stringify(products));
+
+      closeModal();
+      alert("✅ Product added!");
+
+      // 👇 Optionally, add this product to the bill directly
+      addToBill(barcode);
+    }
+
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+<script src="https://unpkg.com/html5-qrcode"></script>
+</body>
+</html>

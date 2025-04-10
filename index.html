@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>login page</title>
+</head>
+<style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: black;
+            color: rgb(0, 0, 0);
+            padding-bottom: 60px; /* Added padding to account for bottom nav */
+        }
+        .container {
+            padding: 0px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+        .glow{
+            height: 200px;
+            width: 200px;
+            border-radius: 50%;
+            background-image: radial-gradient(40% 40%, rgba(255, 166, 0, 0.58) ,rgba(255, 255, 255, 0));
+            position: absolute;
+            left: -90px;
+            top: -80px;
+            filter: blur(16px);
+         }
+         .logo img{
+            width: 250px;
+            height: auto;
+         }
+
+</style>
+<body>
+    <div class="container">
+        <div class="glow"></div>
+    </div>
+    <div class="logo">
+        <img src="logo.png" alt="logo">
+    </div>
+</body>
+</html>

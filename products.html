@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>SP Fashion - Manage Products</title>
+  <style>
+            body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: rgb(255, 255, 255);
+            color: rgb(0, 0, 0);
+            padding-bottom: 60px; /* Added padding to account for bottom nav */
+        }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { border: 1px solid #ddd; padding: 8px; }
+    th { background: #f2f2f2; }
+    input { width: 100%; box-sizing: border-box; }
+    button { padding: 5px 10px; margin-top: 10px; }
+    .add-form { margin-bottom: 20px; }
+    .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+            background-color: white;
+            padding: 10px 0;
+            z-index: 1000; /* Ensure nav stays on top */
+        }
+  </style>
+</head>
+<body>
+  <h2>📦 Product Management</h2>
+
+  <!-- ✅ Add New Product Form -->
+  <div class="add-form">
+    <h4>Add New Product</h4>
+    <input type="text" id="new-barcode" placeholder="Barcode">
+    <input type="text" id="new-name" placeholder="Product Name">
+    <input type="text" id="new-price" placeholder="Price">
+    <button onclick="addProduct()">➕ Add Product</button>
+  </div>
+
+  <!-- ✅ Product List Table -->
+  <table id="productTable">
+    <thead>
+      <tr>
+        <th>Barcode</th>
+        <th>Name</th>
+        <th>Price</th>
+        <th>Save</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+  <div class="bottom-nav">
+    <a href="home.html">
+        <img src="Vector.svg" alt="Home" width="15px" height="auto">
+    </a>
+    <a href="bill.html">
+        <img src="Send to Printer.svg" alt="Print" width="20px" height="auto">
+    </a>
+    <a href="recode.html">
+        <img src="Vector (1).svg" alt="data" width="15px" height="auto">
+    </a>
+    <a href="data.html">
+        <img src="Rules.svg" alt="Recode" width="20px" height="auto">
+    </a>  
+    <a href="products.html">
+        🔧
+    </a>     
+  </div>
+
+  <script>
+    const tableBody = document.querySelector("#productTable tbody");
+
+    function loadProducts() {
+      const products = JSON.parse(localStorage.getItem("products") || "[]");
+      tableBody.innerHTML = "";
+
+      products.forEach((product, index) => {
+        const row = document.createElement("tr");
+
+        row.innerHTML = `
+          <td><input type="text" value="${product.barcode}" id="barcode-${index}"></td>
+          <td><input type="text" value="${product.name}" id="name-${index}"></td>
+          <td><input type="text" value="${product.price}" id="price-${index}"></td>
+          <td><button onclick="saveProduct(${index})">Save</button></td>
+        `;
+
+        tableBody.appendChild(row);
+      });
+    }
+
+    function saveProduct(index) {
+      const products = JSON.parse(localStorage.getItem("products") || "[]");
+
+      const newBarcode = document.getElementById(`barcode-${index}`).value;
+      const newName = document.getElementById(`name-${index}`).value;
+      const newPrice = document.getElementById(`price-${index}`).value;
+
+      products[index] = {
+        barcode: newBarcode,
+        name: newName,
+        price: newPrice
+      };
+
+      localStorage.setItem("products", JSON.stringify(products));
+      alert("✅ Product updated!");
+    }
+
+    function addProduct() {
+      const barcode = document.getElementById("new-barcode").value.trim();
+      const name = document.getElementById("new-name").value.trim();
+      const price = document.getElementById("new-price").value.trim();
+
+      if (!barcode || !name || !price) {
+        alert("❗ Please fill all fields");
+        return;
+      }
+
+      const products = JSON.parse(localStorage.getItem("products") || "[]");
+
+      // Check if barcode already exists
+      const exists = products.some(p => p.barcode === barcode);
+      if (exists) {
+        alert("❗ Product with this barcode already exists!");
+        return;
+      }
+
+      products.push({ barcode, name, price });
+      localStorage.setItem("products", JSON.stringify(products));
+
+      // Clear form and reload table
+      document.getElementById("new-barcode").value = "";
+      document.getElementById("new-name").value = "";
+      document.getElementById("new-price").value = "";
+      loadProducts();
+      alert("✅ Product added!");
+    }
+    window.onload = function () {
+  const newBarcode = localStorage.getItem("new-barcode");
+  if (newBarcode) {
+    document.getElementById("new-barcode").value = newBarcode;
+    localStorage.removeItem("new-barcode");
+  }
+}
+
+
+
+    // Initial load
+    loadProducts();
+  </script>
+</body>
+</html>

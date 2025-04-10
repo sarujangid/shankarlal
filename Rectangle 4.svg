@@ -1,0 +1,17 @@
+<svg width="383" height="137" viewBox="0 0 383 137" fill="none" xmlns="http://www.w3.org/2000/svg">
+<foreignObject x="-3" y="-3" width="389" height="143"><div xmlns="http://www.w3.org/1999/xhtml" style="backdrop-filter:blur(2px);clip-path:url(#bgblur_0_38_95_clip_path);height:100%;width:100%"></div></foreignObject><g filter="url(#filter0_f_38_95)" data-figma-bg-blur-radius="4">
+<rect x="1" y="1" width="381" height="135" rx="20" fill="url(#paint0_radial_38_95)" fill-opacity="0.3"/>
+</g>
+<defs>
+<filter id="filter0_f_38_95" x="-3" y="-3" width="389" height="143" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+<feGaussianBlur stdDeviation="0.5" result="effect1_foregroundBlur_38_95"/>
+</filter>
+<clipPath id="bgblur_0_38_95_clip_path" transform="translate(3 3)"><rect x="1" y="1" width="381" height="135" rx="20"/>
+</clipPath><radialGradient id="paint0_radial_38_95" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(371.207 68.5) scale(86.8853 88.7756)">
+<stop stop-color="#FF7900"/>
+<stop offset="1" stop-color="#8A8A89" stop-opacity="0.4"/>
+</radialGradient>
+</defs>
+</svg>
